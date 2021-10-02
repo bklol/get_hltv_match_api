@@ -45,10 +45,16 @@
             $match['team'.$team] = str_replace(array("<",">"),"",$m[0]);
             $team ++;
         }
+        if(strpos($line,"matchEventName gtSmartphone-only"))
+        {
+            preg_match('/>.*</',$line,$m);
+            $match['matchName'] = str_replace(array("<",">"),"",$m[0]);
+        }
+
     }
 
     $today = date('l');
-    $message = "今日CSGO比赛日报:\n";
+    $message = strftime( "%m月%d号", time())." CSGO比赛日报:\n";
     $today_start= strftime( "%B:%d", time());
     foreach ($matches as $key => $m) 
     {
@@ -61,13 +67,18 @@
             }
             if(strftime( "%B:%d", $matches[$key]['time']) == $today_start)
             {
-                $buffer = strftime( "今天 %H:%M ", $matches[$key]['time'])."\n[".$matches[$key]['bo']."]  ".$matches[$key]['team1']." VS ".$matches[$key]['team2']."\n"."HLTV指数:".$star."\n";
-                $message.= $buffer;
+                $buffer = strftime( "今天 %H:%M ", $matches[$key]['time'])."\n".$matches[$key]['matchName']."\n"."[".$matches[$key]['bo']."]  ".$matches[$key]['team1']." VS ".$matches[$key]['team2']."\n"."HLTV指数:".$star."\n";
+                $ibuffer.= $buffer;
             }
         }
     }
-	/*
+    if($ibuffer == null)
+        $message.= '没有星级比赛';
+    else {
+        $message.=$ibuffer;
+    }
+    
     @NoifyToGroup("5984557",$message);
     @NoifyToGroup("739902016",$message);
     @NoifyToGroup("1104064935",$message);
-	*/
+ 
